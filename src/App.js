@@ -1,5 +1,6 @@
 import "./App.css";
 import React from "react";
+import { api } from "./api";
 
 function App() {
   const [todos, setTodos] = React.useState([]);
@@ -7,8 +8,11 @@ function App() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    setTodos([...todos, value]);
-    setValue("");
+    // have now added a simulated api dependency
+    api.createItem(value).then((persistedItem) => {
+      setTodos([...todos, value]);
+      setValue("");
+    });
   }
 
   function TodoList(props) {

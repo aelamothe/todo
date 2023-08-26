@@ -1,8 +1,29 @@
 import React from "react";
-import { render, fireEvent } from "@testing-library/react";
-import userEvent from "@testing-library/user-event"; // similar functionality to fireEvent but easier to use/ understand
+import { render, fireEvent, waitFor } from "@testing-library/react";
+// import userEvent from "@testing-library/user-event"; // similar functionality to fireEvent but easier to use/ understand
 import App from "./App";
+import { api } from "./api";
 
+// mock API
+const mockCreateItem = (api.createItem = jest.fn());
+
+test("add items to list", async () => {
+  const todoText = "Learn Spanish";
+  const { getByText, getByLabelText } = render(<App />);
+  mockCreateItem.mockResolvedValueOnce(todoText);
+
+  // enter content, interact with page
+  const input = getByLabelText("Add todo:");
+  fireEvent.change(input, { target: { value: "wash car" } });
+  fireEvent.click(getByText("Add #1"));
+
+  await waitFor(() => getByText("wash car"));
+
+  expect(mockCreateItem).toBeCalledTimes(1);
+  expect(mockCreateItem).toBeCalledWith(expect.stringContaining("wash car"));
+});
+
+/*
 test("ToDo", () => {
   const { getByText, getByLabelText } = render(<App />);
   getByText("TO-DO LIST");
@@ -35,3 +56,4 @@ test("user-events allows users to add", () => {
   getByText("Learn Spanish");
   getByText("Add #2");
 });
+*/
